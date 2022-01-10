@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Pieces Assembled?",
    "author" : [
       "Sanko Robinson <sanko@cpan.org>"
    ],
@@ -52,6 +52,17 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/sanko/Acme-Come-In-Peace/issues"
+      },
+      "homepage" : "https://github.com/sanko/Acme-Come-In-Peace",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/sanko/Acme-Come-In-Peace.git",
+         "web" : "https://github.com/sanko/Acme-Come-In-Peace"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:SANKO",
    "x_serialization_backend" : "JSON::PP version 4.06",

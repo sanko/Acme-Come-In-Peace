@@ -12,7 +12,7 @@ __END__
 
 =head1 NAME
 
-Acme::Come::In::Peace - It's new $module
+Acme::Come::In::Peace - Pieces Assembled?
 
 =head1 SYNOPSIS
 
@@ -20,14 +20,13 @@ Acme::Come::In::Peace - It's new $module
 
 =head1 DESCRIPTION
 
-Acme::Come::In::Peace is ...
+Acme::Come::In::Peace is for aliens.
 
 =head1 LICENSE
 
 Copyright (C) Sanko Robinson.
 
-This library is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.
+This library is released under the Artistic License 2.
 
 =head1 AUTHOR
 
