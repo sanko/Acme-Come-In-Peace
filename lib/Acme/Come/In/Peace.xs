@@ -177,9 +177,8 @@ void _cdecl_foo_asm() {
 //add esp, 20h
 }
 
-
-
-int return_one( );
+int _add(int a, int b) { return a + b; }
+int return_one( int (*in)(int, int), int, int );
 
 MODULE = Acme::Come::In::Peace    PACKAGE = Acme::Come::In::Peace
 
@@ -196,16 +195,12 @@ int
 add(int val1, int val2)
 CODE:
     int add, sub, mul;
-    asm( "addl  %%ebx, %%eax;" : "=a" (add) : "a" (val1) , "b" (val2) );
+    /*asm( "addl  %%ebx, %%eax;" : "=a" (add) : "a" (val1) , "b" (val2) );
     asm( "subl  %%ebx, %%eax;" : "=a" (sub) : "a" (val1) , "b" (val2) );
     asm( "imull %%ebx, %%eax;" : "=a" (mul) : "a" (val1) , "b" (val2) );
     printf( "%d + %d = %d\r\n", val1, val2, add );
     printf( "%d - %d = %d\r\n", val1, val2, sub );
-    printf( "%d * %d = %d\r\n", val1, val2, mul );
-    RETVAL = add;
-    if(return_one() == 1)
-        warn("Okay!");
-    else
-        warn("Nope!");
+    printf( "%d * %d = %d\r\n", val1, val2, mul );*/
+    RETVAL = return_one(_add, val1, val2);
 OUTPUT:
     RETVAL

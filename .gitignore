@@ -35,4 +35,5 @@ lib/Acme/Come/In/Peace.c
 .tidyall.d/
 temp/
 gen/
-t/blank.*
+blank.*
+temp.*

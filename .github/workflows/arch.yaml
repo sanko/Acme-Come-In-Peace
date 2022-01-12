@@ -1,0 +1,138 @@
+name: Exotic
+on: [push, pull_request]
+
+jobs:
+  build_job:
+    # The host should always be linux
+    runs-on: ubuntu-18.04
+    name:  ${{ matrix.arch }} - ${{ matrix.distro }}
+
+    # Run steps on a matrix of 3 arch/distro combinations
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: armv6
+            distro: bullseye
+          - arch: armv6
+            distro: alpine_latest
+
+          - arch: armv7
+            distro: bullseye
+          - arch: armv7
+            distro: fedora_latest
+          - arch: armv7
+            distro: ubuntu20.04
+          - arch: armv7
+            distro: alpine_latest
+          # cpanm doesn't work on archarm?
+          #- arch: armv7
+          #  distro: archarm_latest
+
+          - arch: aarch64
+            distro: ubuntu20.04
+          - arch: aarch64
+            distro: bullseye
+          # cpanm doesn't work on archarm?
+          #- arch: aarch64
+          #  distro: archarm_latest
+          - arch: aarch64
+            distro: fedora_latest
+          - arch: aarch64
+            distro: alpine_latest
+
+          - arch: s390x
+            distro: fedora_latest
+          - arch: s390x
+            distro: bullseye
+          - arch: s390x
+            distro: ubuntu20.04
+          - arch: s390x
+            distro: alpine_latest
+
+          - arch: ppc64le
+            distro: alpine_latest
+          - arch: ppc64le
+            distro: fedora_latest
+          - arch: ppc64le
+            distro: ubuntu20.04
+          - arch: ppc64le
+            distro: bullseye
+
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: uraimo/run-on-arch-action@v2.1.1
+        name: Build artifact
+        id: build
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+
+          # Not required, but speeds up builds
+          githubToken: ${{ github.token }}
+
+          # Create an artifacts directory
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+
+          # Mount the artifacts directory as /artifacts in the container
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/artifacts"
+
+          # Pass some environment variables to the container
+          env: | # YAML, but pipe character is necessary
+            artifact_name: git-${{ matrix.distro }}_${{ matrix.arch }}
+
+          # The shell to run commands with in the container
+          shell: /bin/sh
+
+          # Install some dependencies in the container. This speeds up builds if
+          # you are also using githubToken. Any dependencies installed here will
+          # be part of the container image that gets cached, so subsequent
+          # builds don't have to re-install them. The image layer is cached
+          # publicly in your project's package repository, so it is vital that
+          # no secrets are present in the container state or logs.
+          install: |
+            case "${{ matrix.distro }}" in
+              ubuntu*|jessie|stretch|buster|bullseye)
+                apt-get update -q -y
+                apt-get install -q -y git wget make gcc perl libc6-dev cpanminus
+                ;;
+              fedora*)
+                dnf -y update
+                dnf -y install git which wget make gcc perl glibc-devel cpanminus
+                ;;
+              alpine*)
+                apk update
+                apk upgrade
+                apk add git
+                apk add perl
+                apk add wget
+                apk add gcc
+                apk add make
+                apk add perl-app-cpanminus
+                apk add perl-dev
+                apk add libc-dev
+                ;;
+              arch*)
+                pacman -Syu --noconfirm
+                pacman -S --noconfirm perl cpanminus git which wget make gcc
+                perl /usr/bin/vendor_perl/cpanm App::cpanminus
+                ;;
+            esac
+
+          # Produce a binary artifact and place it in the mounted volume
+
+          run: |
+            perl -V
+            cp $(which git) "/artifacts/${artifact_name}"
+            echo "Produced artifact at /artifacts/${artifact_name}"
+            cpanm --installdeps -v -n --mirror http://cpan.cpantesters.org/ .
+            perl ./t/80_diag_asm_call.t
+            cpanm -v --test-only .
+
+      - name: Show the artifact
+        # Items placed in /artifacts in the container will be in
+        # ${PWD}/artifacts on the host.
+        run: |
+          ls -al "${PWD}/artifacts"
