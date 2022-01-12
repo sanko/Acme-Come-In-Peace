@@ -33,3 +33,6 @@ lib/Acme/Come/In/Peace.c
 !lib/Acme/Come/In/ppport.h
 
 .tidyall.d/
+temp/
+gen/
+t/blank.*

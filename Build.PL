@@ -8,5 +8,11 @@ use strict;
 
 use Module::Build::Tiny 0.035;
 
+use Devel::CheckBin;
+
+check_bin('perl');
+use lib '.';use builder::Dyn; builder::Dyn::Build_PL();
+exit;('1');
+
 Build_PL();
 
